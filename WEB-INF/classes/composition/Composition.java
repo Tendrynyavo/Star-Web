@@ -2,6 +2,7 @@ package composition;
 
 import java.sql.Connection;
 import java.sql.Date;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import fabrication.*;
 import connection.BddObject;
@@ -105,6 +106,7 @@ public class Composition extends BddObject<Composition> {
             connection = BddObject.getPostgreSQL();
             construct(quantite, connection);
             connection.commit();
+            setStocks(new Stock().getData(getPostgreSQL(), "date"));
         } catch (Exception e) {
             connection.rollback();
             throw e;
@@ -123,10 +125,11 @@ public class Composition extends BddObject<Composition> {
     public void add(double quantite) throws Exception {
         if (!getPremiere()) throw new Exception("Ce n'est pas une matière première");
         new Stock(this, quantite, false, new Date(System.currentTimeMillis())).insert(null);
+        setStocks(new Stock().getData(getPostgreSQL(), "date"));
     }
 
     public Stock[] getStocksById() throws Exception {
-        if (getStock() == null) setStocks(new Stock().getData(getPostgreSQL(), null));
+        if (getStocks() == null) setStocks(new Stock().getData(getPostgreSQL(), "date"));
         ArrayList<Stock> array = new ArrayList<Stock>();
         for (Stock stock : getStocks()) {
             if (stock.getComposant().getIdComposant().equals(this.getIdComposant()))
@@ -152,19 +155,23 @@ public class Composition extends BddObject<Composition> {
         return stocks;
     }
 
+    public double round(double number) {
+        return (double) Math.round(number * 100) / 100;
+    }
+
     public double getValeurStock() throws Exception {
         Stock[] stocks = getStock();
-        return Math.abs((stocks.length > 0) ? stocks[stocks.length - 1].getValeurStock() : 0);
+        return round(Math.abs((stocks.length > 0) ? stocks[stocks.length - 1].getValeurStock() : 0));
     }
 
     public double getCump() throws Exception {
         Stock[] stocks = getStock();
-        return Math.abs((stocks.length > 0) ? stocks[stocks.length - 1].getCump() : 0);
+        return round(Math.abs((stocks.length > 0) ? stocks[stocks.length - 1].getCump() : 0));
     }
 
     public double getQuantiteStock() throws Exception {
         Stock[] stocks = getStock();
-        return Math.abs((stocks.length > 0 && stocks[stocks.length - 1].getCump() != 0) ? stocks[stocks.length - 1].getValeurStock() / stocks[stocks.length - 1].getCump() : 0);
+        return round(Math.abs(Math.abs((stocks.length > 0 && stocks[stocks.length - 1].getCump() != 0) ? stocks[stocks.length - 1].getValeurStock() / stocks[stocks.length - 1].getCump() : 0)));
     }
 
 /// Fonction pour prendre des données des tables
