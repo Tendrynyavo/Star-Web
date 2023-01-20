@@ -16,8 +16,10 @@ public class Composition extends BddObject<Composition> {
     String idComposition; // ID pour avoir la composition de ce composant
     Composition[] composants;
     static Composition[] compositions; // Tous les Compositions dans la base de donnée
+    static Stock[] stocks;
 
 // Getter
+    public static Stock[] getStocks() { return stocks; }
     public String getIdComposant() { return idComposant; }
     public String getNom() { return nom; }
     public boolean getPremiere() { return premiere; }
@@ -36,6 +38,7 @@ public class Composition extends BddObject<Composition> {
     }
 
     // Setter
+    public void setStocks(Stock[] stocks) { Composition.stocks = stocks; }
     public void setIdComposant(String idComposant) { this.idComposant = idComposant; }
     public void setNom(String nom) { this.nom = nom; }
     public void setPrixUnitaire(double prixUnitaire) throws Exception {
@@ -122,9 +125,18 @@ public class Composition extends BddObject<Composition> {
         new Stock(this, quantite, false, new Date(System.currentTimeMillis())).insert(null);
     }
 
+    public Stock[] getStocksById() throws Exception {
+        if (getStock() == null) setStocks(new Stock().getData(getPostgreSQL(), null));
+        ArrayList<Stock> array = new ArrayList<Stock>();
+        for (Stock stock : getStocks()) {
+            if (stock.getComposant().getIdComposant().equals(this.getIdComposant()))
+                array.add(stock);
+        }
+        return array.toArray(new Stock[array.size()]);
+    }
 /// Fonction pour prendre les stocks de cette composition
     public Stock[] getStock() throws Exception {
-        Stock[] stocks = new Stock(this).getData(getPostgreSQL(), "date", "composant");
+        Stock[] stocks = getStocksById();
         double total = 0; // variable de somme de tous les qtes dans le stocks
         double cump = 0; // initialisation du CUMP
         for (Stock stock : stocks) {
