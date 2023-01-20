@@ -117,6 +117,11 @@ public class Composition extends BddObject<Composition> {
         new Stock(this, quantite, sortie, new Date(System.currentTimeMillis())).insert(connection);
     }
 
+    public void add(double quantite) throws Exception {
+        if (!getPremiere()) throw new Exception("Ce n'est pas une matière première");
+        new Stock(this, quantite, false, new Date(System.currentTimeMillis())).insert(null);
+    }
+
 /// Fonction pour prendre les stocks de cette composition
     public Stock[] getStock() throws Exception {
         Stock[] stocks = new Stock(this).getData(getPostgreSQL(), "date", "composant");
@@ -140,9 +145,14 @@ public class Composition extends BddObject<Composition> {
         return Math.abs((stocks.length > 0) ? stocks[stocks.length - 1].getValeurStock() : 0);
     }
 
+    public double getCump() throws Exception {
+        Stock[] stocks = getStock();
+        return Math.abs((stocks.length > 0) ? stocks[stocks.length - 1].getCump() : 0);
+    }
+
     public double getQuantiteStock() throws Exception {
         Stock[] stocks = getStock();
-        return Math.abs((stocks.length > 0) ? stocks[stocks.length - 1].getValeurStock() / stocks[stocks.length - 1].getCump() : 0);
+        return Math.abs((stocks.length > 0 && stocks[stocks.length - 1].getCump() != 0) ? stocks[stocks.length - 1].getValeurStock() / stocks[stocks.length - 1].getCump() : 0);
     }
 
 /// Fonction pour prendre des données des tables
@@ -158,6 +168,10 @@ public class Composition extends BddObject<Composition> {
 
     public static Composition[] getMatierePremiere() throws Exception {
         return getCompositions("matiere");
+    }
+
+    public static Composition[] getProduitMatiere() throws Exception {
+        return getCompositions("produitmatiere");
     }
 
     public static Composition getCompositionById(String id) throws Exception {

@@ -40,7 +40,9 @@
                         <tr>
                             <th>Nom</th>
                             <th>Prix Unitaire</th>
+                            <th>PUMP</th>
                             <th>Valeur de stock</th>
+                            <th>Quantite total</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -49,7 +51,9 @@
                         <tr>
                             <td><%=produit.getNom() %></td>
                             <td><%=produit.getPrixUnitaire() %></td>
+                            <td><%=produit.getCump() %></td>
                             <td><%=produit.getValeurStock() %></td>
+                            <td><%=produit.getQuantiteStock() %></td>
                             <td><a href="detail.jsp?id=<%=produit.getIdComposant() %>"><button class="btn btn-outline-primary">Detail</button></a></td>
                         </tr>
                         <% } %>
@@ -63,7 +67,9 @@
                         <tr>
                             <th>Nom</th>
                             <th>Prix Unitaire</th>
+                            <th>PUMP</th>
                             <th>Valeur de stock</th>
+                            <th>Quantite total</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -72,7 +78,9 @@
                         <tr>
                             <td><%=matiere.getNom() %></td>
                             <td><%=matiere.getPrixUnitaire() %></td>
+                            <td><%=matiere.getCump() %></td>
                             <td><%=matiere.getValeurStock() %></td>
+                            <td><%=matiere.getQuantiteStock() %></td>
                             <td><a href="detail.jsp?id=<%=matiere.getIdComposant() %>"><button class="btn btn-outline-primary">Detail</button></a></td>
                         </tr>
                         <% } %>
