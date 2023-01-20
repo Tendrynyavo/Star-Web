@@ -1,9 +1,7 @@
 package main;
 
 import fabrication.Stock;
-
 import java.sql.Connection;
-
 import composition.Composition;
 import connection.*;
 public class Main {

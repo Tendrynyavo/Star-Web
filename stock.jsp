@@ -1,6 +1,6 @@
 <%@ page import="composition.Composition" %>
 <%
-    Composition[] compositions = Composition.getProduits(); // Prendre tous les produits
+    Composition[] produits = Composition.getProduits(); // Prendre tous les produits
 %>
 <!DOCTYPE html>
 <html lang="en">

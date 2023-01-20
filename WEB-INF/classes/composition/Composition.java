@@ -70,15 +70,8 @@ public class Composition extends BddObject<Composition> {
 
 // Function
 
-    public Composition[] getAllCompositions() throws Exception {
-        Composition composition = new Composition();
-        composition.setTable("Melange"); // Melange est un VIEW dans la base qui retourne toutes les compositions
-        Composition[] composants = composition.getData(BddObject.getPostgreSQL(), null);
-        return composants;
-    }
-
     public Composition[] decomposer() throws Exception {
-        if (getCompositions() == null) setCompositions(getAllCompositions());
+        if (getCompositions() == null) setCompositions(getCompositions("Melange"));
         ArrayList<Composition> composants = new ArrayList<Composition>(); // variable pour conserver les composants de cette compisition
         for (Composition composition : getCompositions()) {
             if (composition.getIdComposition().equals(getIdComposant()))
@@ -86,17 +79,11 @@ public class Composition extends BddObject<Composition> {
         }
         return composants.toArray(new Composition[composants.size()]);
     }
-
-    public static Composition[] getProduits() throws Exception {
-        Composition composition = new Composition();
-        composition.setTable("Produit"); // VIEW pour avoir tous les produits
-        return composition.getData(BddObject.getPostgreSQL(), null);
-    }
     
 /// Fonction recursive pour inserer les matieres premieres
     public void construct(double quantite, Connection connection) throws Exception {
         if (getPremiere()) {
-            new Stock(this, quantite, true, new Date(System.currentTimeMillis())).insert(connection);
+            add(quantite, true, connection);
             return;
         }
         for (Composition composition : decomposer())
@@ -109,7 +96,7 @@ public class Composition extends BddObject<Composition> {
         if (!getProduit()) throw new Exception("Ce n'est pas un produit");
         Connection connection = null;
         try {
-            connection =  BddObject.getPostgreSQL();
+            connection = BddObject.getPostgreSQL();
             construct(quantite, connection);
             connection.commit();
         } catch (Exception e) {
@@ -121,9 +108,10 @@ public class Composition extends BddObject<Composition> {
     }
 
 /// Fonction pour ajouter des entrées en matiere premiere: S'applique seulement au matiere premiere
-    public void add(double quantite) throws Exception {
+    public void add(double quantite, boolean sortie, Connection connection) throws Exception {
         if (!getPremiere()) throw new Exception("Ce n'est pas une matière première");
-        new Stock(this, quantite, false, new Date(System.currentTimeMillis())).insert(null);
+        if (getQuantiteStock() < quantite) throw new Exception(this.getNom() + " insuffisant pour la production");
+        new Stock(this, quantite, sortie, new Date(System.currentTimeMillis())).insert(connection);
     }
 
 /// Fonction pour prendre les stocks de cette composition
@@ -147,5 +135,17 @@ public class Composition extends BddObject<Composition> {
     public double getValeurStock() throws Exception {
         Stock[] stocks = getStock();
         return (stocks.length > 0) ? stocks[stocks.length - 1].getValeurStock() : 0;
+    }
+
+    public double getQuantiteStock() throws Exception {
+        Stock[] stocks = getStock();
+        return (stocks.length > 0) ? stocks[stocks.length - 1].getValeurStock() / stocks[stocks.length - 1].getCump() : 0;
+    }
+
+/// Fonction pour prendre des données des tables
+    public static Composition[] getCompositions(String table) throws Exception {
+        Composition composition = new Composition();
+        composition.setTable(table); // VIEW pour avoir tous les produits
+        return composition.getData(BddObject.getPostgreSQL(), null);
     }
 }
