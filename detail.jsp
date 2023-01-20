@@ -1,7 +1,8 @@
 <%@ page import="composition.Composition" %>
+<%@ page import="fabrication.Stock" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
-    Composition[] compositions = Composition.getProduits(); // Prendre tous les produits
+    Composition composition = Composition.getCompositionById(request.getParameter("id")); // Prendre tous les produits
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,19 +31,28 @@
     </div>
     <%-- HEADER --%>
 
-    <div class="container w-75">
-        <table class="table rounded mt-5">
+    <div class="container w-75 mt-5">
+        <h1 class="text-align"><%=composition.getNom() %></h1>
+        <table class="table rounded">
             <thead class="">
                 <tr>
-                    <th>Nom</th>
+                    <th>Date</th>
+                    <th>Quantite</th>
                     <th>Prix Unitaire</th>
+                    <th>Type</th>
+                    <th>CUMP</th>
+                    <th>Valeur en stock</th>
                 </tr>
             </thead>
             <tbody>
-                <% for (Composition produit :compositions) { %>
+                <% for (Stock stock :composition.getStock()) { %>
                 <tr>
-                    <td><%=produit.getNom() %></td>
-                    <td><%=produit.getPrixUnitaire() %></td>
+                    <td><%=stock.getDate() %></td>
+                    <td><%=stock.getQuantite() %></td>
+                    <td><%=stock.getPrixUnitaire() %></td>
+                    <td><% out.print((stock.getSortie()) ? "Sortie" : "Entrée"); %></td>
+                    <td><%=stock.getCump() %></td>
+                    <td><%=stock.getValeurStock() %></td>
                 </tr>
                 <% } %>
             </tbody>

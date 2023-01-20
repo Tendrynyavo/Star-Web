@@ -21,11 +21,21 @@ public class Stock extends BddObject<Stock> {
     public void setSortie(boolean sortie) { this.sortie = sortie; }
     public void setIdStock(String idStock) { this.idStock = idStock; }
     public void setComposant(Composition composant) { this.composant = composant; }
-    public void setPrixUnitaire(double prixUnitaire) { this.prixUnitaire = prixUnitaire; }
-    public void setQuantite(double quantite) { this.quantite = quantite; }
-    public void setCump(double cump) { this.cump = cump; }
+    public void setPrixUnitaire(double prixUnitaire) throws Exception { 
+        if (prixUnitaire < 0) throw new Exception("Prix Unitaire ne doit pas etre negative");
+        this.prixUnitaire = prixUnitaire; 
+    }
+    public void setQuantite(double quantite) throws Exception { 
+        if (quantite < 0) throw new Exception("Quantite ne doit pas etre negative");
+        this.quantite = quantite;
+    }
+    public void setCump(double cump) throws Exception { 
+        this.cump = Math.abs(cump);
+    }
     public void setDate(Date date) { this.date = date; }
-    public void setValeurStock(double valeurStock) { this.valeurStock = valeurStock; }
+    public void setValeurStock(double valeurStock) { 
+        this.valeurStock = Math.abs(valeurStock);
+    }
 
 /// Getters
     public boolean getSortie() { return sortie; } 
@@ -60,7 +70,7 @@ public class Stock extends BddObject<Stock> {
         setSortie(sortie);
     }
 
-    public Stock(Composition composant, double prixUnitaire, double quantite, Date date, double cump, double valeurStock) {
+    public Stock(Composition composant, double prixUnitaire, double quantite, Date date, double cump, double valeurStock) throws Exception {
         setComposant(composant);
         setPrixUnitaire(prixUnitaire);
         setQuantite(quantite);

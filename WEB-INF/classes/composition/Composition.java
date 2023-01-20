@@ -46,7 +46,10 @@ public class Composition extends BddObject<Composition> {
     public void setProduit(boolean produit) { this.produit = produit; }
     public void setIdComposition(String idComposition) { this.idComposition = idComposition; }
     public void setComposants(Composition[] composants) { this.composants = composants; }
-    public void setQuantite(double quantite) { this.quantite = quantite; }
+    public void setQuantite(double quantite) throws Exception { 
+        if (quantite < 0) throw new Exception("Quantite invalide");
+        this.quantite = quantite;
+    }
     public static void setCompositions(Composition[] compositions) {
         Composition.compositions = compositions;
     }
@@ -119,33 +122,45 @@ public class Composition extends BddObject<Composition> {
         Stock[] stocks = new Stock(this).getData(getPostgreSQL(), "date", "composant");
         double total = 0; // variable de somme de tous les qtes dans le stocks
         double cump = 0; // initialisation du CUMP
-        for (int n = 0; n < stocks.length; n++) {
-            if (!stocks[n].getSortie()) {
-                cump = ((total * cump) + (stocks[n].getPrixUnitaire() * stocks[n].getQuantite())) / (total + stocks[n].getQuantite());
-                total += stocks[n].getQuantite();
+        for (Stock stock : stocks) {
+            if (!stock.getSortie()) {
+                cump = ((total * cump) + (stock.getPrixUnitaire() * stock.getQuantite())) / (total + stock.getQuantite());
+                total += stock.getQuantite();
             } else {
-                total -= stocks[n].getQuantite();
+                total -= stock.getQuantite();
             }
-            stocks[n].setCump(cump);
-            stocks[n].setValeurStock(cump * total);
+            stock.setCump(cump);
+            stock.setValeurStock(cump * total);
         }
         return stocks;
     }
 
     public double getValeurStock() throws Exception {
         Stock[] stocks = getStock();
-        return (stocks.length > 0) ? stocks[stocks.length - 1].getValeurStock() : 0;
+        return Math.abs((stocks.length > 0) ? stocks[stocks.length - 1].getValeurStock() : 0);
     }
 
     public double getQuantiteStock() throws Exception {
         Stock[] stocks = getStock();
-        return (stocks.length > 0) ? stocks[stocks.length - 1].getValeurStock() / stocks[stocks.length - 1].getCump() : 0;
+        return Math.abs((stocks.length > 0) ? stocks[stocks.length - 1].getValeurStock() / stocks[stocks.length - 1].getCump() : 0);
     }
 
 /// Fonction pour prendre des données des tables
-    public static Composition[] getCompositions(String table) throws Exception {
+    static Composition[] getCompositions(String table) throws Exception {
         Composition composition = new Composition();
         composition.setTable(table); // VIEW pour avoir tous les produits
         return composition.getData(BddObject.getPostgreSQL(), null);
+    }
+
+    public static Composition[] getProduits() throws Exception {
+        return getCompositions("produit");
+    }
+
+    public static Composition[] getMatierePremiere() throws Exception {
+        return getCompositions("matiere");
+    }
+
+    public static Composition getCompositionById(String id) throws Exception {
+        return getCompositions("composants WHERE idcomposant='" + id + "'")[0];
     }
 }

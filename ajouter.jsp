@@ -1,7 +1,7 @@
 <%@ page import="composition.Composition" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
-    Composition[] compositions = Composition.getProduits(); // Prendre tous les produits
+    Composition[] produits = Composition.getProduits(); // Prendre tous les produits
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,23 +30,22 @@
     </div>
     <%-- HEADER --%>
 
-    <div class="container w-75">
-        <table class="table rounded mt-5">
-            <thead class="">
-                <tr>
-                    <th>Nom</th>
-                    <th>Prix Unitaire</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for (Composition produit :compositions) { %>
-                <tr>
-                    <td><%=produit.getNom() %></td>
-                    <td><%=produit.getPrixUnitaire() %></td>
-                </tr>
+    <div class="container w-50 shadow-sm rounded p-4 mt-5">
+        <div class="mb-3">
+            <label for="formGroupExampleInput" class="form-label">Produit</label>
+            <select class="form-select" aria-label="Default select example" name="id">
+                <% for (Composition produit : produits) { %>
+                <option value="<%=produit.getIdComposant() %>"><%=produit.getNom() %></option>
                 <% } %>
-            </tbody>
-        </table>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="formGroupExampleInput2" class="form-label">Quantite</label>
+            <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="" name="quantite">
+        </div>
+        <div class="mb-3">
+            <input type="submit" value="Produire" class="btn btn-outline-primary">
+        </div>
     </div>
 </body>
 </html>
