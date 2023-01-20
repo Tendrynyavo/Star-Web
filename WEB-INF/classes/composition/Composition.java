@@ -1,10 +1,12 @@
 package composition;
 
+import java.sql.Connection;
+import java.sql.Date;
 import java.util.ArrayList;
 import fabrication.*;
 import connection.BddObject;
 
-public class Composition extends BddObject {
+public class Composition extends BddObject<Composition> {
 
     String idComposant; // ID de ce composant
     String nom;
@@ -67,18 +69,11 @@ public class Composition extends BddObject {
     }
 
 // Function
-    public static Composition[] convert(Object[] objects) {
-        Composition[] compositions = new Composition[objects.length];
-        for (int i = 0; i < objects.length; i++) {
-            compositions[i] = (Composition) objects[i];
-        }
-        return compositions;
-    }
 
     public Composition[] getAllCompositions() throws Exception {
         Composition composition = new Composition();
         composition.setTable("Melange"); // Melange est un VIEW dans la base qui retourne toutes les compositions
-        Composition[] composants = convert(composition.getData(BddObject.getPostgreSQL(), null));
+        Composition[] composants = composition.getData(BddObject.getPostgreSQL(), null);
         return composants;
     }
 
@@ -95,11 +90,62 @@ public class Composition extends BddObject {
     public static Composition[] getProduits() throws Exception {
         Composition composition = new Composition();
         composition.setTable("Produit"); // VIEW pour avoir tous les produits
-        return convert(composition.getData(BddObject.getPostgreSQL(), null));
+        return composition.getData(BddObject.getPostgreSQL(), null);
     }
     
+/// Fonction recursive pour inserer les matieres premieres
+    public void construct(double quantite, Connection connection) throws Exception {
+        if (getPremiere()) {
+            new Stock(this, quantite, true, new Date(System.currentTimeMillis())).insert(connection);
+            return;
+        }
+        for (Composition composition : decomposer())
+            composition.construct(quantite * composition.getQuantite(), connection);
+        if (getProduit()) new Stock(this, quantite, false, new Date(System.currentTimeMillis())).insert(connection);
+    }
+
+/// Fonction pour inserer tous les sorties de ce produit: C'est une fonction seulement pour les produits
     public void fabriquer(double quantite) throws Exception {
-        Fabrication fabrication = new Fabrication(this, quantite);
-        fabrication.insert(null);
+        if (!getProduit()) throw new Exception("Ce n'est pas un produit");
+        Connection connection = null;
+        try {
+            connection =  BddObject.getPostgreSQL();
+            construct(quantite, connection);
+            connection.commit();
+        } catch (Exception e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            connection.close();
+        }
+    }
+
+/// Fonction pour ajouter des entrées en matiere premiere: S'applique seulement au matiere premiere
+    public void add(double quantite) throws Exception {
+        if (!getPremiere()) throw new Exception("Ce n'est pas une matière première");
+        new Stock(this, quantite, false, new Date(System.currentTimeMillis())).insert(null);
+    }
+
+/// Fonction pour prendre les stocks de cette composition
+    public Stock[] getStock() throws Exception {
+        Stock[] stocks = new Stock(this).getData(getPostgreSQL(), "date", "composant");
+        double total = 0; // variable de somme de tous les qtes dans le stocks
+        double cump = 0; // initialisation du CUMP
+        for (int n = 0; n < stocks.length; n++) {
+            if (!stocks[n].getSortie()) {
+                cump = ((total * cump) + (stocks[n].getPrixUnitaire() * stocks[n].getQuantite())) / (total + stocks[n].getQuantite());
+                total += stocks[n].getQuantite();
+            } else {
+                total -= stocks[n].getQuantite();
+            }
+            stocks[n].setCump(cump);
+            stocks[n].setValeurStock(cump * total);
+        }
+        return stocks;
+    }
+
+    public double getValeurStock() throws Exception {
+        Stock[] stocks = getStock();
+        return (stocks.length > 0) ? stocks[stocks.length - 1].getValeurStock() : 0;
     }
 }

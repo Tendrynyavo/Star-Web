@@ -2,9 +2,9 @@ package fabrication;
 
 import java.sql.Date;
 import composition.Composition;
-import connection.BddObject;
+import connection.*;
 
-public class Fabrication extends BddObject {
+public class Fabrication extends BddObject<Fabrication> {
 
 // Field 
     String idFabrication;
