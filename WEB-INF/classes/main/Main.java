@@ -25,6 +25,8 @@ public class Main {
             // for (Composition composition : compositions) {
             //     composition.insert(null);
             // }
+            Composition[] produit = Composition.getProduits();
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

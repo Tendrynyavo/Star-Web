@@ -6,7 +6,7 @@ import composition.Composition;
 
 public class Stock extends BddObject<Stock> {
     
-/// Field
+/// FIELD
     String idStock;
     @ForeignKey (column = "idComposant", typeColumn = String.class)
     Composition composant;
@@ -17,7 +17,7 @@ public class Stock extends BddObject<Stock> {
     double cump; // cout moyen pondéré de ce stock
     double valeurStock; // valeur de Stock
 
-/// Setters
+/// SETTERS
     public void setSortie(boolean sortie) { this.sortie = sortie; }
     public void setIdStock(String idStock) { this.idStock = idStock; }
     public void setComposant(Composition composant) { this.composant = composant; }
@@ -37,7 +37,7 @@ public class Stock extends BddObject<Stock> {
         this.valeurStock = Math.abs(valeurStock);
     }
 
-/// Getters
+/// GETTERS
     public boolean getSortie() { return sortie; } 
     public String getIdStock() { return idStock; }
     public Composition getComposant() { return composant; }

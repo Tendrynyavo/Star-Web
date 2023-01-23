@@ -8,6 +8,7 @@ import connection.BddObject;
 
 public class Composition extends BddObject<Composition> {
 
+/// FIELD
     String idComposant; // ID de ce composant
     String nom;
     boolean premiere, produit;
@@ -16,10 +17,10 @@ public class Composition extends BddObject<Composition> {
     String idComposition; // ID pour avoir la composition de ce composant
     Composition[] composants;
     static Composition[] compositions; // Tous les Compositions dans la base de donnée
-    static Stock[] stocks; // Tous les Stockes dans la base
+    Stock[] stocks = null; // Tous les Stockes dans la base
 
-/// Getter
-    public static Stock[] getStocks() { return stocks; }
+/// GETTER
+    public Stock[] getStocks() { return stocks; }
     public String getIdComposant() { return idComposant; }
     public String getNom() { return nom; }
     public boolean getPremiere() { return premiere; }
@@ -35,8 +36,8 @@ public class Composition extends BddObject<Composition> {
     }
     public static Composition[] getCompositions() { return compositions; }
 
-/// Setter
-    public void setStocks(Stock[] stocks) { Composition.stocks = stocks; }
+/// SETTER
+    public void setStocks(Stock[] stocks) { this.stocks = stocks; }
     public void setIdComposant(String idComposant) { this.idComposant = idComposant; }
     public void setNom(String nom) { this.nom = nom; }
     public void setPrixUnitaire(double prixUnitaire) throws Exception {
@@ -55,7 +56,7 @@ public class Composition extends BddObject<Composition> {
         Composition.compositions = compositions;
     }
 
-/// Constructor
+/// CONSTRUCTOR
     public Composition() {
         // initialisation des attributs nécessaire pour BddObject
         setTable("Composants");
@@ -87,7 +88,8 @@ public class Composition extends BddObject<Composition> {
 /// Fonction recursive pour inserer les matieres premieres
     public void construct(double quantite, Connection connection) throws Exception {
         if (getPremiere()) {
-            add(quantite, true, connection);
+            if (getQuantiteStock() < quantite) throw new Exception(this.getNom() + " insuffisant pour la production");
+            new Stock(this, quantite, true, new Date(System.currentTimeMillis())).insert(connection);
             return;
         }
         for (Composition composition : decomposer())
@@ -110,13 +112,6 @@ public class Composition extends BddObject<Composition> {
         } finally {
             connection.close();
         }
-    }
-
-/// Fonction pour ajouter des entrées en matiere premiere: S'applique seulement au matiere premiere
-    public void add(double quantite, boolean sortie, Connection connection) throws Exception {
-        if (!getPremiere()) throw new Exception("Ce n'est pas une matière première");
-        if (getQuantiteStock() < quantite) throw new Exception(this.getNom() + " insuffisant pour la production");
-        new Stock(this, quantite, sortie, new Date(System.currentTimeMillis())).insert(connection);
     }
 
 /// Fonction pour ajouter des matières premières dans le stock
