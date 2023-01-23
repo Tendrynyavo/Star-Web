@@ -2,7 +2,6 @@ package composition;
 
 import java.sql.Connection;
 import java.sql.Date;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import fabrication.*;
 import connection.BddObject;
@@ -17,9 +16,9 @@ public class Composition extends BddObject<Composition> {
     String idComposition; // ID pour avoir la composition de ce composant
     Composition[] composants;
     static Composition[] compositions; // Tous les Compositions dans la base de donnée
-    static Stock[] stocks;
+    static Stock[] stocks; // Tous les Stockes dans la base
 
-// Getter
+/// Getter
     public static Stock[] getStocks() { return stocks; }
     public String getIdComposant() { return idComposant; }
     public String getNom() { return nom; }
@@ -34,11 +33,9 @@ public class Composition extends BddObject<Composition> {
             somme += composant.getPrixUnitaire() * composant.getQuantite();
         return somme; // return prix Unitaire de cette composition
     }
-    public static Composition[] getCompositions() {
-        return compositions;
-    }
+    public static Composition[] getCompositions() { return compositions; }
 
-    // Setter
+/// Setter
     public void setStocks(Stock[] stocks) { Composition.stocks = stocks; }
     public void setIdComposant(String idComposant) { this.idComposant = idComposant; }
     public void setNom(String nom) { this.nom = nom; }
@@ -57,7 +54,8 @@ public class Composition extends BddObject<Composition> {
     public static void setCompositions(Composition[] compositions) {
         Composition.compositions = compositions;
     }
-// Constructor
+
+/// Constructor
     public Composition() {
         // initialisation des attributs nécessaire pour BddObject
         setTable("Composants");
@@ -75,8 +73,7 @@ public class Composition extends BddObject<Composition> {
         setPrixUnitaire(prixUnitaire);
     }
 
-// Function
-
+/// Function
     public Composition[] decomposer() throws Exception {
         if (getCompositions() == null) setCompositions(getCompositions("Melange"));
         ArrayList<Composition> composants = new ArrayList<Composition>(); // variable pour conserver les composants de cette compisition
@@ -122,6 +119,7 @@ public class Composition extends BddObject<Composition> {
         new Stock(this, quantite, sortie, new Date(System.currentTimeMillis())).insert(connection);
     }
 
+/// Fonction pour ajouter des matières premières dans le stock
     public void add(double quantite) throws Exception {
         if (!getPremiere()) throw new Exception("Ce n'est pas une matière première");
         new Stock(this, quantite, false, new Date(System.currentTimeMillis())).insert(null);
@@ -137,6 +135,7 @@ public class Composition extends BddObject<Composition> {
         }
         return array.toArray(new Stock[array.size()]);
     }
+
 /// Fonction pour prendre les stocks de cette composition
     public Stock[] getStock() throws Exception {
         Stock[] stocks = getStocksById();
