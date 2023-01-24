@@ -1,6 +1,9 @@
 <%@ page import="composition.Composition" %>
+<%@ page import="stock.Stock" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
+
+    Stock[] stocks = Composition.getAllStocks();
     Composition[] matieres = Composition.getMatierePremiere(); // Prendre tous les matieres premieres
     Composition[] produits = Composition.getProduits(); // Prendre tous les produits
 %>
@@ -47,13 +50,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% for (Composition produit :produits) { %>
+                        <% for (Composition produit : produits) { %>
                         <tr>
                             <td><%=produit.getNom() %></td>
                             <td><%=produit.getPrixUnitaire() %></td>
-                            <td><%=produit.getCump() %></td>
-                            <td><%=produit.getValeurStock() %></td>
-                            <td><%=produit.getQuantiteStock() %></td>
+                            <td><%=produit.getCump(stocks) %></td>
+                            <td><%=produit.getValeurStock(stocks) %></td>
+                            <td><%=produit.getQuantiteStock(stocks) %></td>
                             <td><a href="detail.jsp?id=<%=produit.getIdComposant() %>"><button class="btn btn-outline-primary">Detail</button></a></td>
                         </tr>
                         <% } %>
@@ -78,9 +81,9 @@
                         <tr>
                             <td><%=matiere.getNom() %></td>
                             <td><%=matiere.getPrixUnitaire() %></td>
-                            <td><%=matiere.getCump() %></td>
-                            <td><%=matiere.getValeurStock() %></td>
-                            <td><%=matiere.getQuantiteStock() %></td>
+                            <td><%=matiere.getCump(stocks) %></td>
+                            <td><%=matiere.getValeurStock(stocks) %></td>
+                            <td><%=matiere.getQuantiteStock(stocks) %></td>
                             <td><a href="detail.jsp?id=<%=matiere.getIdComposant() %>"><button class="btn btn-outline-primary">Detail</button></a></td>
                         </tr>
                         <% } %>

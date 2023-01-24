@@ -1,4 +1,4 @@
-package fabrication;
+package stock;
 
 import java.sql.Date;
 import connection.*;

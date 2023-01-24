@@ -1,9 +1,9 @@
 package main;
 
-import fabrication.Stock;
 import java.sql.Connection;
 import composition.Composition;
 import connection.*;
+import stock.Stock;
 public class Main {
 
     public static void main(String[] args) throws Exception {
@@ -25,8 +25,12 @@ public class Main {
             // for (Composition composition : compositions) {
             //     composition.insert(null);
             // }
-            Composition[] produit = Composition.getProduits();
-            
+            Composition[] produit = Composition.getMatierePremiere();
+            for (Composition composition : produit) {
+                composition.getCump();
+                composition.getValeurStock();
+                composition.getQuantiteStock();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
