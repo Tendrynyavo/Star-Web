@@ -1,11 +1,8 @@
 package main;
 
 import java.sql.Connection;
-import composition.Composition;
-import connection.*;
 import magasin.Magasin;
 import stock.EtatStock;
-import stock.Stock;
 public class Main {
 
     public static void main(String[] args) throws Exception {
