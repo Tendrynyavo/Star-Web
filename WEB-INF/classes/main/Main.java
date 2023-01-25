@@ -3,6 +3,8 @@ package main;
 import java.sql.Connection;
 import composition.Composition;
 import connection.*;
+import magasin.Magasin;
+import stock.EtatStock;
 import stock.Stock;
 public class Main {
 
@@ -25,6 +27,8 @@ public class Main {
             // for (Composition composition : compositions) {
             //     composition.insert(null);
             // }
+            Magasin magasin = new Magasin("M1");
+            EtatStock[] etats = magasin.getEtatStockOptimisee("2022-01-10");
         } catch (Exception e) {
             e.printStackTrace();
         }

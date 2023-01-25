@@ -3,8 +3,8 @@ package composition;
 import java.sql.Connection;
 import java.sql.Date;
 import java.util.ArrayList;
-
 import connection.BddObject;
+import magasin.Magasin;
 import stock.*;
 
 public class Composition extends BddObject<Composition> {
@@ -195,10 +195,10 @@ public class Composition extends BddObject<Composition> {
         return getCompositions("composants WHERE idcomposant='" + id + "'")[0];
     }
 
-    public Stock[] getStocks(String type) throws Exception {
+    public Stock[] getStocks(String type, Magasin magasin) throws Exception {
         Stock stock = new Stock(this);
-        stock.setTable(type);
-        return stock.getData(getPostgreSQL(), null, "composant");
+        stock.setTable(type + " WHERE idcomposant='" + this.getIdComposant() + "' AND \"idmagasin\" = '"+magasin.getIdMagasin()+"'");
+        return stock.getData(getPostgreSQL(), null);
     }
 
     public EtatStock getEtatStock(Stock[] entrees, Stock[] sorties) throws Exception {
@@ -212,17 +212,29 @@ public class Composition extends BddObject<Composition> {
         return new EtatStock(this, entree, sortie);
     }
 
-    public EtatStock getEtatStock() throws Exception {
-        return getEtatStock(getStocks("entree"), getStocks("sortie"));
+    public EtatStock getEtatStock(Magasin magasin) throws Exception {
+        return getEtatStock(getStocks("entree", magasin), getStocks("sortie", magasin));
     }
 
-    public EtatStock getEtatStock(Date date) throws Exception {
-        return getEtatStock(getStocksDate("entree", date), getStocksDate("sortie", date));
+    public EtatStock getEtatStock(Date date, Magasin magasin) throws Exception {
+        return getEtatStock(getStocksDate("entree", date, magasin), getStocksDate("sortie", date, magasin));
     }
 
-    public Stock[] getStocksDate(String type, Date date) throws Exception {
+    public EtatStock getEtatStock(Date date, Reporte reporte, Magasin magasin) throws Exception {
+        EtatStock etat = getEtatStock(getStocksOptimise("entree", date, reporte, magasin), getStocksOptimise("sortie", date, reporte, magasin));
+        etat.setEntree(etat.getEntree() + reporte.find(this).getQuantite());
+        return etat;
+    }
+
+    public Stock[] getStocksDate(String type, Date date, Magasin magasin) throws Exception {
         Stock stock = new Stock(this);
-        stock.setTable(type + " WHERE idcomposant='" + this.getIdComposant() + "' AND date <= '" + date + "'");
+        stock.setTable(type + " WHERE idcomposant='" + this.getIdComposant() + "' AND date <= '" + date + "' AND \"idmagasin\" = '"+magasin.getIdMagasin()+"'");
+        return stock.getData(getPostgreSQL(), null);
+    }
+
+    public Stock[] getStocksOptimise(String type, Date date, Reporte reporte, Magasin magasin) throws Exception {
+        Stock stock = new Stock(this);
+        stock.setTable(type + " WHERE idcomposant='" + this.getIdComposant() + "' AND date <= '" + date + "' AND  date >= '" + reporte.getDate() + "' AND \"idmagasin\" = '"+magasin.getIdMagasin()+"'");
         return stock.getData(getPostgreSQL(), null);
     }
 }

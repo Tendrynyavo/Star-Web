@@ -14,10 +14,14 @@ public class Stock extends BddObject<Stock> {
     double quantite;
     boolean sortie;
     Date date;
+    String idMagasin;
     double cump; // cout moyen pondéré de ce stock
     double valeurStock; // valeur de Stock
 
 /// SETTERS
+    public void setIdMagasin(String idMagasin) {
+        this.idMagasin = idMagasin;
+    }
     public void setSortie(boolean sortie) { this.sortie = sortie; }
     public void setIdStock(String idStock) { this.idStock = idStock; }
     public void setComposant(Composition composant) { this.composant = composant; }
@@ -38,6 +42,7 @@ public class Stock extends BddObject<Stock> {
     }
 
 /// GETTERS
+    public String getIdMagasin() {return idMagasin;}
     public boolean getSortie() { return sortie; } 
     public String getIdStock() { return idStock; }
     public Composition getComposant() { return composant; }

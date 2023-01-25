@@ -17,6 +17,9 @@
         <li class="nav-item">
             <a class="nav-link text-white" href="formulaireDate.jsp?traitement=etatStockDatee">Etat Stock Datée</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="formulaireDate.jsp?traitement=etatStockDateeOptimisee">Etat Stock Datée Optimisée</a>
+        </li>
     </ul>
 </div>
 <%-- HEADER --%>

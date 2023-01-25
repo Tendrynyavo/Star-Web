@@ -4,6 +4,9 @@
 <%@ page import="magasin.Magasin" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
+    if (session.getAttribute("magasin") == null) {
+        response.sendRedirect("index.jsp");
+    }
     Magasin magasin = (Magasin) session.getAttribute("magasin");
     EtatStock[] etats = magasin.getEtatStock();
 %>

@@ -5,6 +5,7 @@ import java.sql.Date;
 import composition.Composition;
 import connection.BddObject;
 import stock.EtatStock;
+import stock.Reporte;
 
 public class Magasin extends BddObject<Magasin> {
     
@@ -38,26 +39,37 @@ public class Magasin extends BddObject<Magasin> {
 /// CONSTRUCTORS
     public Magasin() throws Exception {
         setProduits(Composition.getProduits());
+        setTable("magasin");
     }
-    public Magasin(String nom) throws Exception {
-        setNom(nom);
+
+    public Magasin(String id) throws Exception {
+        setIdMagasin(id);
+        setProduits(Composition.getProduits());
     }
 
 /// FUNCTIONS
+
     public EtatStock[] getEtatStock() throws Exception {
         EtatStock[] etats = new EtatStock[getProduits().length];
-        for (int i = 0; i < etats.length; i++) {
-            etats[i] = getProduits()[i].getEtatStock();
-        }
+        for (int i = 0; i < etats.length; i++)
+            etats[i] = getProduits()[i].getEtatStock(this);
         return etats;
     }
 
     public EtatStock[] getEtatStock(String dateString) throws Exception {
         Date date = Date.valueOf(dateString);
         EtatStock[] etats = new EtatStock[getProduits().length];
-        for (int i = 0; i < etats.length; i++) {
-            etats[i] = getProduits()[i].getEtatStock(date);
-        }
+        for (int i = 0; i < etats.length; i++)
+            etats[i] = getProduits()[i].getEtatStock(date, this);
+        return etats;
+    }
+
+    public EtatStock[] getEtatStockOptimisee(String dateString) throws Exception {
+        Date date = Date.valueOf(dateString);
+        Reporte reporte = Reporte.getReporte(date, this);
+        EtatStock[] etats = new EtatStock[getProduits().length];
+        for (int i = 0; i < etats.length; i++)
+            etats[i] = getProduits()[i].getEtatStock(date, reporte, this);
         return etats;
     }
 }

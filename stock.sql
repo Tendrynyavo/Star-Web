@@ -75,3 +75,36 @@ GROUP BY idcomposant;
 CREATE VIEW entree_initial AS
 SELECT idcomposant, 0 as entree
 FROM produit;
+
+CREATE TABLE reporte (
+    idReporte VARCHAR PRIMARY KEY,
+    date DATE NOT NULL
+);
+
+CREATE TABLE reporte_produit (
+    idReporte VARCHAR REFERENCES reporte (idReporte),
+    idComposant VARCHAR REFERENCES composants (idComposant),
+    quantite DOUBLE PRECISION
+);
+
+CREATE SEQUENCE seqreporte 
+START WITH 1
+INCREMENT BY 1;
+
+CREATE VIEW composants_reporte AS
+SELECT r.idComposant, nom, premiere, produit, prixunitaire, quantite, idReporte as idComposition
+FROM reporte_produit r
+    JOIN composants c on r.idComposant = c.idcomposant;
+
+insert into stock (idstock, idcomposant, quantite, prixunitaire, sortie, date)
+values  ('STO0001', 'C005', 90, 0, true, '2022-01-24'),
+        ('STO0002', 'C005', 30, 0, true, '2022-01-26'),
+        ('STO0003', 'C005',  20, 0,false, '2022-01-25'),
+        ('STO0004', 'C005', 10, 0, true, '2022-01-24'),
+        ('STO0005', 'C005',  40, 0,false, '2022-01-27'),
+        ('STO0006', 'C005',  80, 0,false, '2022-01-31'),
+        ('STO0007', 'C005', 70, 0, true, '2022-01-30'),
+        ('STO0008', 'C005',  60, 0,false, '2022-01-29'),
+        ('STO0009', 'C005', 50, 0, true, '2022-01-28'),
+        ('STO0010', 'C005', 90, 0, true, '2022-02-01'),
+        ('STO0011', 'C005',  100, 0,false, '2022-02-02');

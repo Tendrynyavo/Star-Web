@@ -10,7 +10,13 @@
     Magasin magasin = (Magasin) session.getAttribute("magasin");
     String date = request.getParameter("date");
     EtatStock[] etats = null;
-    etats = magasin.getEtatStock(date);
+    String error = null;
+    try {
+        etats = magasin.getEtatStockOptimisee(date);
+    } catch(Exception e) {
+        error = e.getMessage();
+    }
+
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,6 +33,7 @@
 
     <div class="container w-75 mt-5">
         <h2>Etat du stock du <%=date %></h2>
+        <% if (error == null) { %>
         <table class="table rounded">
             <thead class="">
                 <tr>
@@ -49,6 +56,9 @@
                 <% } %>
             </tbody>
         </table>
+        <% } else { %>
+        <h2><%=error %></h2>
+        <% } %>
     </div>
 </body>
 </html>
