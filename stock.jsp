@@ -18,21 +18,7 @@
 </head>
 <body>
 
-    <%-- HEADER --%>
-    <div class="container px-3">
-        <ul class="nav m-3 p-3 bg-dark rounded shadow">
-            <li class="nav-item">
-                <a class="nav-link text-white" href="index.jsp">Produit</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" href="stock.jsp">Stock</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" href="ajouter.jsp">Ajouter</a>
-            </li>
-        </ul>
-    </div>
-    <%-- HEADER --%>
+    <%@ include file="header.jsp" %>
 
     <div class="container w-75 mt-5">
         <div class="row">

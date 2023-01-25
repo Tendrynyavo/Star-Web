@@ -17,11 +17,11 @@ public class EtatStock extends BddObject<EtatStock> {
         this.produit = produit;
     }
     public void setEntree(double entree) throws Exception {
-        if (entree <= 0) throw new Exception("Entree Invalide");
+        if (entree < 0) throw new Exception("Entree Invalide");
         this.entree = entree;
     }
     public void setSortie(double sortie) throws Exception {
-        if (sortie <= 0) throw new Exception("Sortie Invalide");
+        if (sortie < 0) throw new Exception("Sortie Invalide");
         this.sortie = sortie;
     }
 

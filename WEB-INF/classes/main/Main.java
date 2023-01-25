@@ -25,12 +25,6 @@ public class Main {
             // for (Composition composition : compositions) {
             //     composition.insert(null);
             // }
-            Composition[] produit = Composition.getMatierePremiere();
-            for (Composition composition : produit) {
-                composition.getCump();
-                composition.getValeurStock();
-                composition.getQuantiteStock();
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }

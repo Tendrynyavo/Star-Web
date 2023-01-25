@@ -1,5 +1,7 @@
 package magasin;
 
+import java.sql.Date;
+
 import composition.Composition;
 import connection.BddObject;
 import stock.EtatStock;
@@ -34,15 +36,28 @@ public class Magasin extends BddObject<Magasin> {
     }
 
 /// CONSTRUCTORS
+    public Magasin() throws Exception {
+        setProduits(Composition.getProduits());
+    }
     public Magasin(String nom) throws Exception {
         setNom(nom);
     }
 
 /// FUNCTIONS
-    public EtatStock[] getEtatStock() {
+    public EtatStock[] getEtatStock() throws Exception {
         EtatStock[] etats = new EtatStock[getProduits().length];
         for (int i = 0; i < etats.length; i++) {
             etats[i] = getProduits()[i].getEtatStock();
         }
+        return etats;
+    }
+
+    public EtatStock[] getEtatStock(String dateString) throws Exception {
+        Date date = Date.valueOf(dateString);
+        EtatStock[] etats = new EtatStock[getProduits().length];
+        for (int i = 0; i < etats.length; i++) {
+            etats[i] = getProduits()[i].getEtatStock(date);
+        }
+        return etats;
     }
 }

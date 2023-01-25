@@ -194,4 +194,35 @@ public class Composition extends BddObject<Composition> {
     public static Composition getCompositionById(String id) throws Exception {
         return getCompositions("composants WHERE idcomposant='" + id + "'")[0];
     }
+
+    public Stock[] getStocks(String type) throws Exception {
+        Stock stock = new Stock(this);
+        stock.setTable(type);
+        return stock.getData(getPostgreSQL(), null, "composant");
+    }
+
+    public EtatStock getEtatStock(Stock[] entrees, Stock[] sorties) throws Exception {
+        double entree = 0, sortie = 0;
+        for (int i = 0; i < entrees.length; i++) {
+            entree += entrees[i].getQuantite();
+        }
+        for (int i = 0; i < sorties.length; i++) {
+            sortie += sorties[i].getQuantite();
+        }
+        return new EtatStock(this, entree, sortie);
+    }
+
+    public EtatStock getEtatStock() throws Exception {
+        return getEtatStock(getStocks("entree"), getStocks("sortie"));
+    }
+
+    public EtatStock getEtatStock(Date date) throws Exception {
+        return getEtatStock(getStocksDate("entree", date), getStocksDate("sortie", date));
+    }
+
+    public Stock[] getStocksDate(String type, Date date) throws Exception {
+        Stock stock = new Stock(this);
+        stock.setTable(type + " WHERE idcomposant='" + this.getIdComposant() + "' AND date <= '" + date + "'");
+        return stock.getData(getPostgreSQL(), null);
+    }
 }
